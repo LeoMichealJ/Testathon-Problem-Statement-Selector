@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Deal or No Deal — Vegas Edition</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Bebas+Neue&family=Bungee+Shade&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --red:#ff0844;
+      --gold:#ffd700;
+      --yellow:#ffed4e;
+      --blue:#00d9ff;
+      --purple:#b026ff;
+      --bg:#1a0511;
+      --panel:#2d0a1a;
+      --shadow: 0 0 20px rgba(255,8,68,.5);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; 
+      background: 
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,8,68,.03) 2px, rgba(255,8,68,.03) 4px),
+        radial-gradient(ellipse at top, #2d0a1a 0%, #1a0511 50%);
+      color:#fff;
+      font-family:"Righteous", cursive;
+      overflow-x:hidden;
+      position:relative;
+    }
+
+    /* Animated background lights */
+    body::before{
+      content:""; position:fixed; inset:0; pointer-events:none;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(255,8,68,.15), transparent 40%),
+        radial-gradient(circle at 80% 60%, rgba(255,215,0,.12), transparent 40%),
+        radial-gradient(circle at 50% 80%, rgba(0,217,255,.1), transparent 35%);
+      animation: lights 8s ease-in-out infinite alternate;
+      z-index:0;
+    }
+    @keyframes lights{
+      0%{ opacity:.7; transform:scale(1) rotate(0deg) }
+      100%{ opacity:1; transform:scale(1.1) rotate(5deg) }
+    }
+
+    /* Header */
+    .hero{
+      position:relative; padding:48px 20px 32px; text-align:center; z-index:1;
+    }
+    .title{
+      font-family:"Bungee Shade", cursive; 
+      font-size:clamp(32px, 6vw, 72px);
+      letter-spacing:3px; margin:0 0 12px; text-transform:uppercase;
+      color:var(--gold);
+      text-shadow: 
+        0 0 10px var(--yellow),
+        0 0 20px var(--red),
+        0 0 30px var(--red),
+        0 5px 10px rgba(0,0,0,.8);
+      animation: neon-flicker 3s infinite alternate, float 4s ease-in-out infinite;
+    }
+    @keyframes neon-flicker{
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+        text-shadow: 
+          0 0 10px var(--yellow),
+          0 0 20px var(--red),
+          0 0 30px var(--red),
+          0 5px 10px rgba(0,0,0,.8);
+      }
+      20%, 24%, 55% {
+        text-shadow: 
+          0 0 5px var(--yellow),
+          0 0 10px var(--red),
+          0 5px 10px rgba(0,0,0,.8);
+      }
+    }
+    @keyframes float{
+      0%, 100%{ transform:translateY(0) }
+      50%{ transform:translateY(-8px) }
+    }
+
+    .subtitle{
+      color:#ffb3d9; margin:0 auto; max-width:800px; font-size:15px;
+      text-shadow: 0 2px 4px rgba(0,0,0,.6);
+    }
+
+    .marquee{
+      background: linear-gradient(90deg, var(--red) 0%, var(--gold) 25%, var(--blue) 50%, var(--purple) 75%, var(--red) 100%);
+      padding:3px 0; margin:20px 0; overflow:hidden; position:relative;
+    }
+    .marquee::before{
+      content:"★ CLICK TO REVEAL ★ GOOD LUCK ★ CLICK TO REVEAL ★ GOOD LUCK ★ CLICK TO REVEAL ★ GOOD LUCK ★";
+      position:absolute; white-space:nowrap; font-family:"Bebas Neue"; font-size:18px;
+      letter-spacing:3px; color:#000; font-weight:bold;
+      animation: scroll 20s linear infinite;
+    }
+    @keyframes scroll{
+      from{ transform:translateX(0) }
+      to{ transform:translateX(-50%) }
+    }
+
+    /* Grid */
+    .board{
+      width: min(1200px, 92vw); margin:28px auto 64px; display:grid; gap:20px;
+      grid-template-columns: repeat(5, 1fr); position:relative; z-index:1;
+    }
+    @media (max-width: 900px){ .board{ grid-template-columns: repeat(4, 1fr);} }
+    @media (max-width: 640px){ .board{ grid-template-columns: repeat(3, 1fr);} }
+
+    .case{
+      position:relative; border:none; cursor:pointer; aspect-ratio: 1 / .85; border-radius:8px;
+      background: 
+        linear-gradient(145deg, #4a0a2a, #2d0515);
+      border:3px solid var(--gold);
+      box-shadow: 
+        0 0 15px rgba(255,215,0,.4),
+        inset 0 2px 5px rgba(255,255,255,.2),
+        0 8px 20px rgba(0,0,0,.7);
+      color:#fff; overflow:hidden; isolation:isolate; 
+      transition: transform .15s ease, filter .15s ease;
+      animation: subtle-pulse 2s ease-in-out infinite;
+    }
+    @keyframes subtle-pulse{
+      0%, 100%{ box-shadow: 0 0 15px rgba(255,215,0,.4), inset 0 2px 5px rgba(255,255,255,.2), 0 8px 20px rgba(0,0,0,.7); }
+      50%{ box-shadow: 0 0 25px rgba(255,215,0,.6), inset 0 2px 5px rgba(255,255,255,.2), 0 8px 20px rgba(0,0,0,.7); }
+    }
+
+    .case:before{
+      content:""; position:absolute; inset:0;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(255,215,0,.1) 10px,
+        rgba(255,215,0,.1) 20px
+      );
+      pointer-events:none;
+    }
+
+    .case:hover{ 
+      transform: translateY(-6px) scale(1.05) rotate(2deg); 
+      box-shadow: 
+        0 0 30px rgba(255,215,0,.8),
+        0 0 50px rgba(255,8,68,.5),
+        inset 0 2px 5px rgba(255,255,255,.3),
+        0 15px 40px rgba(0,0,0,.8);
+      animation: shake .3s ease-in-out;
+    }
+    @keyframes shake{
+      0%, 100%{ transform: translateY(-6px) scale(1.05) rotate(0deg) }
+      25%{ transform: translateY(-6px) scale(1.05) rotate(-3deg) }
+      75%{ transform: translateY(-6px) scale(1.05) rotate(3deg) }
+    }
+
+    .case.opened{ 
+      filter: grayscale(1) brightness(.4); 
+      opacity:.5; 
+      cursor:not-allowed; 
+      transform:none; 
+      border-color:#666;
+      animation:none;
+    }
+
+    .tag{
+      position:absolute; top:10px; left:50%; transform:translateX(-50%);
+      padding:4px 12px; border-radius:4px;
+      background: linear-gradient(180deg, var(--gold), #cc9900);
+      font-size:11px; font-weight:bold; font-family:"Bebas Neue"; 
+      letter-spacing:1px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.6);
+      border:1px solid #fff;
+      color:#000;
+    }
+    
+    .num{
+      position:absolute; inset:auto 0 18px; margin:auto; 
+      width:80px; height:80px; border-radius:50%;
+      background: 
+        radial-gradient(circle at 30% 30%, #fff, var(--gold) 60%, #cc9900);
+      display:grid; place-items:center; 
+      font-size:36px; font-weight:bold; font-family:"Bebas Neue";
+      color:#000;
+      box-shadow: 
+        0 0 20px rgba(255,215,0,.8),
+        inset 0 -3px 8px rgba(0,0,0,.3),
+        inset 0 3px 8px rgba(255,255,255,.5);
+      border:3px solid #fff;
+      animation: spin-coin 4s linear infinite;
+    }
+    @keyframes spin-coin{
+      0%, 100%{ transform:rotateY(0deg) }
+      50%{ transform:rotateY(180deg) }
+    }
+
+    .stars{
+      position:absolute; inset:0; pointer-events:none;
+    }
+    .stars::before, .stars::after{
+      content:"✦"; position:absolute; color:var(--yellow);
+      font-size:20px; text-shadow: 0 0 10px var(--yellow);
+      animation: twinkle 1.5s ease-in-out infinite alternate;
+    }
+    .stars::before{ top:8px; left:8px; animation-delay:.3s }
+    .stars::after{ top:8px; right:8px; animation-delay:.7s }
+    @keyframes twinkle{
+      from{ opacity:.3; transform:scale(.8) }
+      to{ opacity:1; transform:scale(1.2) }
+    }
+
+    /* Modal */
+    .overlay{
+      position:fixed; inset:0; 
+      background: rgba(0,0,0,.85);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      display:none; align-items:center; justify-content:center; padding:20px; z-index:30;
+      animation: fade .3s ease;
+    }
+    .overlay.active{ display:flex; }
+    @keyframes fade{ from{opacity:0} to{opacity:1} }
+
+    .modal{
+      width:min(760px, 92vw); 
+      background: 
+        linear-gradient(145deg, #4a0a2a, #2d0515);
+      border-radius:12px; padding:28px 28px 32px; position:relative; color:#fff;
+      border:4px solid var(--gold);
+      box-shadow: 
+        0 0 30px rgba(255,215,0,.6),
+        0 0 60px rgba(255,8,68,.4),
+        inset 0 2px 10px rgba(255,255,255,.15);
+      transform: scale(.85); opacity:0; 
+      animation: slot-drop .4s cubic-bezier(.68,-0.55,.265,1.55) forwards;
+    }
+    @keyframes slot-drop{ 
+      to{ transform:scale(1); opacity:1 } 
+    }
+
+    .modal::before{
+      content:""; position:absolute; inset:-3px; border-radius:14px; 
+      background: linear-gradient(45deg, var(--red), var(--gold), var(--blue), var(--purple));
+      background-size:400% 400%;
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude; 
+      padding:3px; pointer-events:none;
+      animation: gradient-spin 3s ease infinite;
+    }
+    @keyframes gradient-spin{
+      0%{ background-position:0% 50% }
+      50%{ background-position:100% 50% }
+      100%{ background-position:0% 50% }
+    }
+
+    .modal-header{ 
+      display:flex; align-items:center; gap:12px; margin-bottom:12px; 
+      flex-wrap:wrap;
+    }
+    .chip{ 
+      font-family:"Bebas Neue"; font-size:14px; letter-spacing:1px; 
+      padding:6px 14px; border-radius:20px; 
+      background: linear-gradient(180deg, var(--gold), #cc9900);
+      color:#000; border:2px solid #fff; font-weight:bold;
+      box-shadow: 0 2px 8px rgba(0,0,0,.4);
+    }
+    .chip.unlocked{
+      background: linear-gradient(180deg, #00ff88, #00cc66);
+      animation: blink-green 1s ease-in-out infinite;
+    }
+    @keyframes blink-green{
+      0%, 100%{ opacity:1 }
+      50%{ opacity:.7 }
+    }
+
+    .modal h2{ 
+      margin:6px 0 12px; font-family:"Bebas Neue"; font-size:32px;
+      color:var(--gold); letter-spacing:2px;
+      text-shadow: 
+        0 0 10px var(--yellow),
+        0 2px 4px rgba(0,0,0,.8);
+    }
+    .modal p{ 
+      margin:0; line-height:1.7; font-size:16px;
+      background: rgba(0,0,0,.3); padding:16px; border-radius:8px;
+      border-left:4px solid var(--gold);
+    }
+
+    .confetti{ position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+    .confetti i{
+      --x: 50%; --y: -20%; --rotation: 0deg; --delay: 0ms;
+      position:absolute; left:var(--x); top:var(--y); 
+      width:8px; height:12px;
+      background: var(--color, var(--gold)); 
+      transform: rotate(var(--rotation));
+      animation: fall 2s ease-in var(--delay) forwards;
+      opacity:.9;
+    }
+    @keyframes fall{ 
+      to{ 
+        top:110%; 
+        transform: rotate(calc(var(--rotation) + 720deg)) translateX(var(--drift, 0px)); 
+        opacity:0;
+      } 
+    }
+
+    footer{ 
+      text-align:center; color:#ffb3d9; margin: 20px 0 40px; 
+      font-size:13px; position:relative; z-index:1;
+      text-shadow: 0 1px 3px rgba(0,0,0,.6);
+    }
+    footer a{ color: var(--gold); text-decoration:none; font-weight:bold }
+    footer a:hover{ text-decoration:underline }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <h1 class="title">PROBLEM STATEMENT SELECTOR</h1>
+    <div class="marquee"></div>
+    <p class="subtitle">🎰 Click a briefcase to reveal your challenge! Click outside to close and lock it in. May Lady Luck be with you! 🎰</p>
+  </section>
+
+  <main class="board" id="board"></main>
+
+  <!-- Modal -->
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <span class="chip" id="chip">CASE #</span>
+        <span class="chip unlocked">JACKPOT!</span>
+      </div>
+      <h2 id="modalTitle">Your Challenge</h2>
+      <p id="problemText">...</p>
+      <div class="confetti" id="confetti"></div>
+    </div>
+  </div>
+
+  <footer>🎲 Made with classic Vegas vibes using <a href="https://fonts.google.com/specimen/Righteous" target="_blank" rel="noreferrer noopener">Righteous</a>, <a href="https://fonts.google.com/specimen/Bebas+Neue" target="_blank" rel="noreferrer noopener">Bebas Neue</a> & <a href="https://fonts.google.com/specimen/Bungee+Shade" target="_blank" rel="noreferrer noopener">Bungee Shade</a> 🎲</footer>
+
+  <script>
+    const problemStatements = [
+      "Design a test plan to validate login rate limits for 1M MAU.",
+      "Create an algorithm to schedule 1000 jobs with minimal latency.",
+      "Draft a risk register for a payments microservice migration.",
+      "Propose a cache strategy to cut P99 latencies by 40%.",
+      "Write acceptance criteria for a Jira epic: Invoice Export v2.",
+      "Estimate infra cost to scale feature flags to 10M users.",
+      "Model A/B test power for expected uplift of 3%.",
+      "Outline data contracts to prevent schema drift in ETL.",
+      "Design load tests for an API with bursty traffic.",
+      "Create a rollback plan for zero-downtime releases.",
+      "Prioritize a backlog using RICE with constraints.",
+      "Map observability (logs/metrics/traces) for auth service.",
+      "Propose error budgets and SLOs for core endpoints.",
+      "Draft a playbook for incident triage within 15 minutes.",
+      "Define QA gates for agentic test generation pipeline."
+    ];
+
+    const board = document.getElementById('board');
+    const overlay = document.getElementById('overlay');
+    const modalTitle = document.getElementById('modalTitle');
+    const problemText = document.getElementById('problemText');
+    const chip = document.getElementById('chip');
+    const confetti = document.getElementById('confetti');
+
+    let lastClickedBox = null;
+
+    // Create 15 boxes
+    for (let i = 1; i <= 15; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'case';
+      btn.type = 'button';
+      btn.dataset.index = i;
+      btn.setAttribute('aria-label', `Open case ${i}`);
+
+      btn.innerHTML = `
+        <span class="tag">CASE</span>
+        <span class="num">${i}</span>
+        <span class="stars"></span>
+      `;
+
+      btn.addEventListener('click', () => openModal(i, btn));
+      board.appendChild(btn);
+    }
+
+    function openModal(i, btn){
+      if (btn.classList.contains('opened')) return;
+      lastClickedBox = btn;
+
+      modalTitle.textContent = `Challenge #${i}`;
+      chip.textContent = `CASE #${i}`;
+      problemText.textContent = problemStatements[i-1] || 'No challenge available.';
+
+      // Casino confetti
+      confetti.innerHTML = '';
+      const colors = ['#ffd700', '#ff0844', '#00d9ff', '#b026ff', '#ffed4e'];
+      for (let k = 0; k < 25; k++){
+        const c = document.createElement('i');
+        const x = Math.random()*100;
+        const rotation = Math.random()*360;
+        const delay = Math.random()*600;
+        const drift = (Math.random()-0.5)*100;
+        c.style.setProperty('--x', x+'%');
+        c.style.setProperty('--rotation', rotation+'deg');
+        c.style.setProperty('--delay', delay+'ms');
+        c.style.setProperty('--drift', drift+'px');
+        c.style.setProperty('--color', colors[Math.floor(Math.random()*colors.length)]);
+        confetti.appendChild(c);
+      }
+
+      overlay.classList.add('active');
+      overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    overlay.addEventListener('click', (e) => {
+      const modal = e.currentTarget.querySelector('.modal');
+      const clickInside = modal.contains(e.target);
+      if (!clickInside){
+        closeModal();
+        if (lastClickedBox){ lastClickedBox.classList.add('opened'); }
+      }
+    });
+
+    window.addEventListener('keydown', (e)=>{
+      if (e.key === 'Escape' && overlay.classList.contains('active')) {
+        closeModal();
+        if (lastClickedBox){ lastClickedBox.classList.add('opened'); }
+      }
+    });
+
+    function closeModal(){
+      overlay.classList.remove('active');
+      overlay.setAttribute('aria-hidden', 'true');
+    }
+  </script>
+</body>
+</html>

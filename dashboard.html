@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Deal or No Deal — 15 Box Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0a0c12;
+      --panel:#121623;
+      --accent:#39e2ff;
+      --accent2:#ff5df0;
+      --text:#eaf2ff;
+      --muted:#a8b0c0;
+      --success:#24d686;
+      --shadow: 0 10px 30px rgba(0,0,0,.5);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(57,226,255,.10), transparent 50%),
+        radial-gradient(1000px 600px at 110% 10%, rgba(255,93,240,.10), transparent 50%),
+        linear-gradient(180deg, #0a0c12, #0a0c12 60%, #0d1018);
+      color:var(--text);
+      font-family:"Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      overflow-x:hidden;
+    }
+
+    /* Header */
+    .hero{
+      position:relative; padding:48px 20px 24px; text-align:center;
+    }
+    .title{
+      font-family:"Orbitron", ui-sans-serif; font-size:clamp(28px, 4vw, 44px);
+      letter-spacing:1px; margin:0 0 8px; text-transform:uppercase;
+      background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent));
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+      filter: drop-shadow(0 0 8px rgba(57,226,255,.35));
+      position:relative;
+    }
+    .title::after{
+      content:""; position:absolute; inset:-6px; border-radius:16px; pointer-events:none;
+      background: conic-gradient(from 0deg, rgba(57,226,255,.0), rgba(57,226,255,.25), rgba(255,93,240,.25), rgba(57,226,255,.0));
+      -webkit-mask: linear-gradient(#000, #000) content-box, linear-gradient(#000, #000);
+      -webkit-mask-composite: xor; mask-composite: exclude; padding:10px; opacity:.35;
+      animation: spin 6s linear infinite;
+    }
+    .subtitle{color:var(--muted); margin:0 auto; max-width:800px}
+
+    @keyframes spin{to{transform:rotate(1turn)}}
+
+    /* Grid */
+    .board{
+      width: min(1200px, 92vw); margin:28px auto 64px; display:grid; gap:16px;
+      grid-template-columns: repeat(5, 1fr);
+    }
+    @media (max-width: 900px){ .board{ grid-template-columns: repeat(4, 1fr);} }
+    @media (max-width: 640px){ .board{ grid-template-columns: repeat(3, 1fr);} }
+
+    .case{
+      position:relative; border:none; cursor:pointer; aspect-ratio: 1 / .78; border-radius:18px;
+      background: linear-gradient(145deg, #1b2235, #0f1423);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06), 0 10px 30px rgba(0,0,0,.6);
+      color:#fff; overflow:hidden; isolation:isolate; transition: transform .2s ease, filter .2s ease, box-shadow .2s ease;
+    }
+    .case:before{ /* chrome edge shine */
+      content:""; position:absolute; inset:-60%; transform: rotate(25deg) translateX(-60%);
+      background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.3) 45%, rgba(255,255,255,0) 60%);
+      filter: blur(6px); transition: transform .6s ease; pointer-events:none;
+    }
+    .case:hover:before{ transform: rotate(25deg) translateX(50%); }
+    .case:hover{ transform: translateY(-2px) scale(1.02); box-shadow: inset 0 0 0 1px rgba(255,255,255,.09), 0 18px 50px rgba(0,0,0,.65); }
+    .case.opened{ filter: grayscale(1) brightness(.6); opacity:.7; cursor:not-allowed; transform:none; }
+
+    .case .lid{ position:absolute; inset:0; background:
+        linear-gradient(180deg, rgba(255,255,255,.05), rgba(0,0,0,.05)),
+        radial-gradient(100% 80% at 50% -30%, rgba(255,255,255,.25), transparent 55%);
+      mix-blend:screen; opacity:.6; pointer-events:none;
+    }
+
+    .tag{
+      position:absolute; top:14px; left:14px; padding:6px 10px; border-radius:999px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      font-size:12px; font-weight:700; font-family:"Orbitron"; box-shadow: var(--shadow);
+    }
+    .num{
+      position:absolute; inset:auto 0 16px; margin:auto; width:72px; height:72px; border-radius:16px;
+      background: linear-gradient(145deg, #0f172a, #1f2937);
+      display:grid; place-items:center; font-size:28px; font-weight:700; font-family:"Orbitron";
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.08), 0 10px 20px rgba(0,0,0,.5);
+    }
+    .bling{
+      position:absolute; right:-14px; bottom:-14px; width:70px; height:70px; border-radius:50%; opacity:.85;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(255,255,255,.1) 35%, rgba(0,0,0,0) 36%),
+                  conic-gradient(from 0deg, var(--accent), var(--accent2), var(--accent));
+      filter: blur(1px) drop-shadow(0 0 12px rgba(57,226,255,.5));
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+    @keyframes pulse{ 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+
+    /* Modal */
+    .overlay{
+      position:fixed; inset:0; background: rgba(6,8,14,.65);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      display:none; align-items:center; justify-content:center; padding:20px; z-index:30;
+      animation: fade .2s ease;
+    }
+    .overlay.active{ display:flex; }
+    @keyframes fade{ from{opacity:0} to{opacity:1} }
+
+    .modal{
+      width:min(760px, 92vw); background: linear-gradient(180deg, #0c111e, #0a0d18);
+      border-radius:20px; padding:22px 22px 26px; position:relative; color:var(--text);
+      box-shadow: 0 30px 80px rgba(0,0,0,.7), inset 0 0 0 1px rgba(255,255,255,.06);
+      transform: scale(.9); opacity:0; animation: pop .25s ease forwards;
+    }
+    @keyframes pop{ to{ transform:scale(1); opacity:1 } }
+
+    .modal::before{ /* rainbow border */
+      content:""; position:absolute; inset:-1.5px; border-radius:22px; padding:2px;
+      background: linear-gradient(120deg, var(--accent), var(--accent2), var(--accent));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude; pointer-events:none; opacity:.6;
+      animation: hue 8s linear infinite;
+    }
+    @keyframes hue{ 0%{filter:hue-rotate(0)} 100%{filter:hue-rotate(360deg)} }
+
+    .modal-header{ display:flex; align-items:center; gap:12px; margin-bottom:8px; }
+    .chip{ font-family:"Orbitron"; font-size:12px; letter-spacing:.5px; padding:6px 10px; border-radius:999px; background:#10182a; color:var(--accent); border:1px solid rgba(255,255,255,.08); }
+    .modal h2{ margin:6px 0 8px; font-family:"Orbitron"; }
+    .modal p{ margin:0; line-height:1.6; color:#dbe7ff; }
+
+    .sparkles{ position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+    .sparkles i{
+      --x: 50%; --y: 50%; --delay: 0ms; --size: 10px; --alpha:.8;
+      position:absolute; left:var(--x); top:var(--y); width:var(--size); height:var(--size);
+      background: radial-gradient(circle, #fff, rgba(255,255,255,0.2)); border-radius:50%;
+      filter: drop-shadow(0 0 6px rgba(255,255,255,.7)); opacity:var(--alpha);
+      transform: translate(-50%, -50%) scale(0); animation: pop-spark .9s ease var(--delay) forwards;
+    }
+    @keyframes pop-spark{ 40%{transform:translate(-50%,-50%) scale(1)} 100%{transform:translate(-50%,-50%) scale(0); opacity:0} }
+
+    footer{ text-align:center; color:var(--muted); margin: 20px 0 40px; font-size:13px }
+    a{ color: var(--accent) }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <h1 class="title">Deal or No Deal — 15</h1>
+    <p class="subtitle">Click a box to reveal a <strong>problem statement</strong>. Click anywhere outside the popup to close it — the opened box will grey out automatically. All animations and fonts are free to use.</p>
+  </section>
+
+  <main class="board" id="board"></main>
+
+  <!-- Modal -->
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <span class="chip" id="chip">BOX #</span>
+        <span class="chip" style="color:var(--success)">UNLOCKED</span>
+      </div>
+      <h2 id="modalTitle">Problem Statement</h2>
+      <p id="problemText">...</p>
+      <div class="sparkles" id="sparkles"></div>
+    </div>
+  </div>
+
+  <footer>Made with ❤ using <a href="https://fonts.google.com/specimen/Orbitron" target="_blank" rel="noreferrer noopener">Orbitron</a> & <a href="https://fonts.google.com/specimen/Poppins" target="_blank" rel="noreferrer noopener">Poppins</a> (free Google Fonts).</footer>
+
+  <script>
+    // ✨ You can edit these problem statements per box (1..15)
+    const problemStatements = [
+      "Design a test plan to validate login rate limits for 1M MAU.",
+      "Create an algorithm to schedule 1000 jobs with minimal latency.",
+      "Draft a risk register for a payments microservice migration.",
+      "Propose a cache strategy to cut P99 latencies by 40%.",
+      "Write acceptance criteria for a Jira epic: Invoice Export v2.",
+      "Estimate infra cost to scale feature flags to 10M users.",
+      "Model A/B test power for expected uplift of 3%.",
+      "Outline data contracts to prevent schema drift in ETL.",
+      "Design load tests for an API with bursty traffic.",
+      "Create a rollback plan for zero-downtime releases.",
+      "Prioritize a backlog using RICE with constraints.",
+      "Map observability (logs/metrics/traces) for auth service.",
+      "Propose error budgets and SLOs for core endpoints.",
+      "Draft a playbook for incident triage within 15 minutes.",
+      "Define QA gates for agentic test generation pipeline."
+    ];
+
+    const board = document.getElementById('board');
+    const overlay = document.getElementById('overlay');
+    const modalTitle = document.getElementById('modalTitle');
+    const problemText = document.getElementById('problemText');
+    const chip = document.getElementById('chip');
+    const sparkles = document.getElementById('sparkles');
+
+    let lastClickedBox = null;
+
+    // Create 15 boxes
+    for (let i = 1; i <= 15; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'case';
+      btn.type = 'button';
+      btn.dataset.index = i;
+      btn.setAttribute('aria-label', `Open box ${i}`);
+
+      btn.innerHTML = `
+        <span class="tag">CASE</span>
+        <span class="lid"></span>
+        <span class="num">${i}</span>
+        <span class="bling"></span>
+      `;
+
+      btn.addEventListener('click', () => openModal(i, btn));
+      board.appendChild(btn);
+    }
+
+    function openModal(i, btn){
+      if (btn.classList.contains('opened')) return; // already used
+      lastClickedBox = btn;
+
+      modalTitle.textContent = `Problem #${i}`;
+      chip.textContent = `BOX #${i}`;
+      problemText.textContent = problemStatements[i-1] || 'No problem statement provided.';
+
+      // Fresh sparkles each time ✨
+      sparkles.innerHTML = '';
+      for (let k = 0; k < 14; k++){
+        const s = document.createElement('i');
+        const x = Math.random()*100;
+        const y = Math.random()*100;
+        const size = Math.round(6 + Math.random()*16);
+        const delay = Math.round(Math.random()*420) + 'ms';
+        const alpha = (0.5 + Math.random()*0.6).toFixed(2);
+        s.style.setProperty('--x', x+'%');
+        s.style.setProperty('--y', y+'%');
+        s.style.setProperty('--size', size+'px');
+        s.style.setProperty('--delay', delay);
+        s.style.setProperty('--alpha', alpha);
+        sparkles.appendChild(s);
+      }
+
+      overlay.classList.add('active');
+      overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    // Close when clicking outside the modal — and grey out that box
+    overlay.addEventListener('click', (e) => {
+      const modal = e.currentTarget.querySelector('.modal');
+      const clickInside = modal.contains(e.target);
+      if (!clickInside){
+        closeModal();
+        if (lastClickedBox){ lastClickedBox.classList.add('opened'); }
+      }
+    });
+
+    // Escape closes (does not grey out unless clicked a box first)
+    window.addEventListener('keydown', (e)=>{
+      if (e.key === 'Escape' && overlay.classList.contains('active')) {
+        closeModal();
+        if (lastClickedBox){ lastClickedBox.classList.add('opened'); }
+      }
+    });
+
+    function closeModal(){
+      overlay.classList.remove('active');
+      overlay.setAttribute('aria-hidden', 'true');
+    }
+  </script>
+</body>
+</html>
