@@ -1,355 +1,461 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Deal or No Deal - Space Edition</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lilita+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lilita+One&display=swap"
+    rel="stylesheet">
   <style>
-    :root{
-      --purple:#6b4ce6;
-      --purple-dark:#4a32a8;
-      --blue:#4fc3f7;
-      --blue-dark:#2196f3;
-      --pink:#ff6ec7;
-      --yellow:#ffd740;
-      --green:#69f0ae;
-      --bg:#1a1446;
-      --bg-deep:#0f0a2e;
+    :root {
+      --purple: #6b4ce6;
+      --purple-dark: #4a32a8;
+      --blue: #4fc3f7;
+      --blue-dark: #2196f3;
+      --pink: #ff6ec7;
+      --yellow: #ffd740;
+      --green: #69f0ae;
+      --bg: #1a1446;
+      --bg-deep: #0f0a2e;
     }
-    *{box-sizing:border-box; margin:0; padding:0}
-    html,body{height:100%; overflow-x:hidden}
-    body{
-      background:var(--bg-deep);
-      color:#fff;
-      font-family:"Fredoka", sans-serif;
-      position:relative;
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow-x: hidden
+    }
+
+    body {
+      background: var(--bg-deep);
+      color: #fff;
+      font-family: "Fredoka", sans-serif;
+      position: relative;
     }
 
     /* Animated space background */
-    .space-bg{
-      position:fixed;
-      inset:0;
+    .space-bg {
+      position: fixed;
+      inset: 0;
       background:
-        radial-gradient(ellipse at 20% 30%, rgba(107,76,230,.15), transparent 50%),
-        radial-gradient(ellipse at 80% 70%, rgba(79,195,247,.12), transparent 50%),
-        radial-gradient(ellipse at 50% 50%, rgba(255,110,199,.08), transparent 60%);
-      z-index:0;
-      transition:transform .15s ease-out;
+        radial-gradient(ellipse at 20% 30%, rgba(107, 76, 230, .15), transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(79, 195, 247, .12), transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(255, 110, 199, .08), transparent 60%);
+      z-index: 0;
+      transition: transform .15s ease-out;
     }
 
     /* Floating stars */
-    .stars{
-      position:fixed;
-      inset:0;
-      overflow:hidden;
-      z-index:1;
-      pointer-events:none;
+    .stars {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      z-index: 1;
+      pointer-events: none;
     }
-    .star{
-      position:absolute;
-      width:3px;
-      height:3px;
-      background:#fff;
-      border-radius:50%;
-      box-shadow:0 0 6px rgba(255,255,255,.8);
-      animation:twinkle 3s ease-in-out infinite;
+
+    .star {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 6px rgba(255, 255, 255, .8);
+      animation: twinkle 3s ease-in-out infinite;
     }
-    @keyframes twinkle{
-      0%, 100%{ opacity:.3; transform:scale(.8) }
-      50%{ opacity:1; transform:scale(1.2) }
+
+    @keyframes twinkle {
+
+      0%,
+      100% {
+        opacity: .3;
+        transform: scale(.8)
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.2)
+      }
     }
 
     /* Floating planets */
-    .planets{
-      position:fixed;
-      inset:0;
-      z-index:1;
-      pointer-events:none;
+    .planets {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
     }
-    .planet{
-      position:absolute;
-      border-radius:50%;
-      opacity:.4;
-      filter:blur(1px);
-      animation:float 20s ease-in-out infinite;
+
+    .planet {
+      position: absolute;
+      border-radius: 50%;
+      opacity: .4;
+      filter: blur(1px);
+      animation: float 20s ease-in-out infinite;
     }
-    @keyframes float{
-      0%, 100%{ transform:translateY(0) rotate(0deg) }
-      50%{ transform:translateY(-30px) rotate(180deg) }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(0deg)
+      }
+
+      50% {
+        transform: translateY(-30px) rotate(180deg)
+      }
     }
 
     /* Content */
-    .content{
-      position:relative;
-      z-index:10;
+    .content {
+      position: relative;
+      z-index: 10;
     }
 
     /* Header */
-    .header{
-      text-align:center;
-      padding:clamp(40px, 8vh, 80px) 20px 30px;
+    .header {
+      text-align: center;
+      padding: clamp(40px, 8vh, 80px) 20px 30px;
     }
-    .logo{
-      font-family:"Lilita One", cursive;
-      font-size:clamp(36px, 7vw, 64px);
-      background:linear-gradient(135deg, var(--blue) 0%, var(--purple) 50%, var(--pink) 100%);
-      -webkit-background-clip:text;
-      background-clip:text;
-      color:transparent;
-      text-shadow:0 4px 20px rgba(79,195,247,.5);
-      margin:0 0 8px;
-      letter-spacing:2px;
-      animation:glow 3s ease-in-out infinite;
-      filter:drop-shadow(0 0 20px rgba(107,76,230,.6));
+
+    .logo {
+      font-family: "Lilita One", cursive;
+      font-size: clamp(36px, 7vw, 64px);
+      background: linear-gradient(135deg, var(--blue) 0%, var(--purple) 50%, var(--pink) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 4px 20px rgba(79, 195, 247, .5);
+      margin: 0 0 8px;
+      letter-spacing: 2px;
+      animation: glow 3s ease-in-out infinite;
+      filter: drop-shadow(0 0 20px rgba(107, 76, 230, .6));
     }
-    @keyframes glow{
-      0%, 100%{ filter:drop-shadow(0 0 20px rgba(107,76,230,.6)) }
-      50%{ filter:drop-shadow(0 0 30px rgba(79,195,247,.8)) }
+
+    @keyframes glow {
+
+      0%,
+      100% {
+        filter: drop-shadow(0 0 20px rgba(107, 76, 230, .6))
+      }
+
+      50% {
+        filter: drop-shadow(0 0 30px rgba(79, 195, 247, .8))
+      }
     }
-    .subtitle{
-      font-size:18px;
-      color:var(--blue);
-      text-transform:uppercase;
-      letter-spacing:3px;
-      font-weight:600;
-      margin-bottom:16px;
+
+    .subtitle {
+      font-size: 18px;
+      color: var(--blue);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-weight: 600;
+      margin-bottom: 16px;
     }
-    .instructions{
-      max-width:650px;
-      margin:0 auto;
-      font-size:15px;
-      color:#b8c9ff;
-      line-height:1.6;
+
+    .instructions {
+      max-width: 650px;
+      margin: 0 auto;
+      font-size: 15px;
+      color: #b8c9ff;
+      line-height: 1.6;
     }
 
     /* Grid */
-    .game-board{
-      max-width:1100px;
-      margin:40px auto 80px;
-      padding:0 20px;
-      display:grid;
-      grid-template-columns:repeat(5, 1fr);
-      gap:clamp(12px, 2vw, 20px);
+    .game-board {
+      max-width: 1100px;
+      margin: 40px auto 80px;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: clamp(12px, 2vw, 20px);
     }
-    @media (max-width:900px){ .game-board{ grid-template-columns:repeat(4, 1fr) } }
-    @media (max-width:640px){ .game-board{ grid-template-columns:repeat(3, 1fr) } }
 
-    .case-card{
-      position:relative;
-      aspect-ratio:1;
-      border:none;
-      cursor:pointer;
+    @media (max-width:900px) {
+      .game-board {
+        grid-template-columns: repeat(4, 1fr)
+      }
+    }
+
+    @media (max-width:640px) {
+      .game-board {
+        grid-template-columns: repeat(3, 1fr)
+      }
+    }
+
+    .case-card {
+      position: relative;
+      aspect-ratio: 1;
+      border: none;
+      cursor: pointer;
       background:
-        linear-gradient(135deg, rgba(107,76,230,.3) 0%, rgba(74,50,168,.4) 100%);
-      border-radius:20px;
-      padding:16px;
-      backdrop-filter:blur(10px);
+        linear-gradient(135deg, rgba(107, 76, 230, .3) 0%, rgba(74, 50, 168, .4) 100%);
+      border-radius: 20px;
+      padding: 16px;
+      backdrop-filter: blur(10px);
       box-shadow:
-        0 8px 32px rgba(0,0,0,.3),
-        inset 0 1px 0 rgba(255,255,255,.2),
-        0 0 0 3px rgba(79,195,247,.3);
-      transition:all .3s cubic-bezier(.34,1.56,.64,1);
-      overflow:hidden;
-    }
-    .case-card::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:linear-gradient(135deg, 
-        rgba(255,255,255,.1) 0%, 
-        transparent 40%, 
-        rgba(79,195,247,.1) 100%);
-      opacity:0;
-      transition:opacity .3s ease;
-    }
-    .case-card:hover{
-      transform:translateY(-8px) scale(1.05);
-      box-shadow:
-        0 16px 48px rgba(79,195,247,.4),
-        inset 0 1px 0 rgba(255,255,255,.3),
-        0 0 0 4px rgba(79,195,247,.5),
-        0 0 20px rgba(79,195,247,.3);
-    }
-    .case-card:hover::before{
-      opacity:1;
-    }
-    .case-card:active{
-      transform:translateY(-6px) scale(1.02);
-    }
-    .case-card.opened{
-      opacity:.3;
-      pointer-events:none;
-      filter:grayscale(1);
+        0 8px 32px rgba(0, 0, 0, .3),
+        inset 0 1px 0 rgba(255, 255, 255, .2),
+        0 0 0 3px rgba(79, 195, 247, .3);
+      transition: all .3s cubic-bezier(.34, 1.56, .64, 1);
+      overflow: hidden;
     }
 
-    .case-icon{
-      position:absolute;
-      top:12px;
-      right:12px;
-      width:28px;
-      height:28px;
-      background:linear-gradient(135deg, var(--yellow), #ffa726);
-      border-radius:8px;
-      display:grid;
-      place-items:center;
-      font-size:16px;
-      box-shadow:0 4px 12px rgba(255,215,0,.4);
+    .case-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg,
+          rgba(255, 255, 255, .1) 0%,
+          transparent 40%,
+          rgba(79, 195, 247, .1) 100%);
+      opacity: 0;
+      transition: opacity .3s ease;
     }
 
-    .case-number{
-      position:absolute;
-      inset:0;
-      display:grid;
-      place-items:center;
-      font-family:"Lilita One", cursive;
-      font-size:clamp(32px, 5vw, 48px);
-      color:#fff;
+    .case-card:hover {
+      transform: translateY(-8px) scale(1.05);
+      box-shadow:
+        0 16px 48px rgba(79, 195, 247, .4),
+        inset 0 1px 0 rgba(255, 255, 255, .3),
+        0 0 0 4px rgba(79, 195, 247, .5),
+        0 0 20px rgba(79, 195, 247, .3);
+    }
+
+    .case-card:hover::before {
+      opacity: 1;
+    }
+
+    .case-card:active {
+      transform: translateY(-6px) scale(1.02);
+    }
+
+    .case-card.opened {
+      opacity: .3;
+      pointer-events: none;
+      filter: grayscale(1);
+    }
+
+    .case-icon {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, var(--yellow), #ffa726);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      box-shadow: 0 4px 12px rgba(255, 215, 0, .4);
+    }
+
+    .case-number {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-family: "Lilita One", cursive;
+      font-size: clamp(32px, 5vw, 48px);
+      color: #fff;
       text-shadow:
-        0 2px 8px rgba(0,0,0,.5),
-        0 0 20px rgba(79,195,247,.6);
+        0 2px 8px rgba(0, 0, 0, .5),
+        0 0 20px rgba(79, 195, 247, .6);
     }
 
-    .case-glow{
-      position:absolute;
-      inset:-20%;
-      background:radial-gradient(circle, rgba(79,195,247,.3), transparent 70%);
-      opacity:0;
-      transition:opacity .3s ease;
+    .case-glow {
+      position: absolute;
+      inset: -20%;
+      background: radial-gradient(circle, rgba(79, 195, 247, .3), transparent 70%);
+      opacity: 0;
+      transition: opacity .3s ease;
     }
-    .case-card:hover .case-glow{
-      opacity:1;
-      animation:pulse 2s ease-in-out infinite;
+
+    .case-card:hover .case-glow {
+      opacity: 1;
+      animation: pulse 2s ease-in-out infinite;
     }
-    @keyframes pulse{
-      0%, 100%{ transform:scale(1); opacity:.3 }
-      50%{ transform:scale(1.1); opacity:.6 }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: .3
+      }
+
+      50% {
+        transform: scale(1.1);
+        opacity: .6
+      }
     }
 
     /* Modal */
-    .overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(10,10,30,.95);
-      backdrop-filter:blur(12px);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:20px;
-      z-index:100;
-      animation:fadeIn .3s ease;
-    }
-    .overlay.active{ display:flex }
-    @keyframes fadeIn{ from{opacity:0} to{opacity:1} }
-
-    .modal{
-      max-width:700px;
-      width:100%;
-      background:linear-gradient(135deg, rgba(107,76,230,.5) 0%, rgba(74,50,168,.6) 100%);
-      border-radius:24px;
-      padding:36px;
-      backdrop-filter:blur(20px);
-      border:3px solid rgba(79,195,247,.4);
-      box-shadow:
-        0 0 60px rgba(79,195,247,.3),
-        0 20px 80px rgba(0,0,0,.5),
-        inset 0 1px 0 rgba(255,255,255,.2);
-      transform:scale(.85) translateY(40px);
-      opacity:0;
-      animation:modalPop .5s cubic-bezier(.68,-.55,.265,1.55) forwards;
-    }
-    @keyframes modalPop{
-      to{ transform:scale(1) translateY(0); opacity:1 }
-    }
-
-    .modal-header{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      margin-bottom:24px;
-      flex-wrap:wrap;
-    }
-    .badge{
-      background:linear-gradient(135deg, var(--purple), var(--purple-dark));
-      color:#fff;
-      padding:10px 20px;
-      border-radius:16px;
-      font-weight:700;
-      font-size:16px;
-      letter-spacing:1px;
-      box-shadow:
-        0 4px 16px rgba(0,0,0,.3),
-        inset 0 1px 0 rgba(255,255,255,.3);
-    }
-    .badge-success{
-      background:linear-gradient(135deg, var(--green), #00e676);
-      color:#000;
-      padding:8px 16px;
-      font-size:14px;
-      display:flex;
-      align-items:center;
-      gap:6px;
-    }
-
-    .modal h2{
-      font-family:"Lilita One", cursive;
-      font-size:clamp(28px, 5vw, 40px);
-      color:#fff;
-      margin:0 0 20px;
-      text-shadow:0 2px 16px rgba(0,0,0,.5);
-    }
-    .modal p{
-      font-size:17px;
-      line-height:1.7;
-      color:#e8f0ff;
-      background:rgba(0,0,0,.3);
-      padding:24px;
-      border-radius:16px;
-      border-left:4px solid var(--blue);
-      box-shadow:inset 0 2px 8px rgba(0,0,0,.2);
-      margin:0;
-    }
-
-    .sparkle-container{
-      position:absolute;
-      inset:0;
-      pointer-events:none;
-      overflow:hidden;
-    }
-    .sparkle{
-      position:absolute;
-      width:8px;
-      height:8px;
-      background:radial-gradient(circle, #fff, transparent);
-      border-radius:50%;
-      opacity:0;
-      animation:sparkleAnim 1.5s ease-out forwards;
-    }
-    @keyframes sparkleAnim{
-      0%{ opacity:1; transform:translate(0, 0) scale(0) }
-      50%{ opacity:1; transform:translate(var(--x), var(--y)) scale(1) }
-      100%{ opacity:0; transform:translate(var(--x), var(--y)) scale(0) }
-    }
-
-    footer{
-      position:relative;
-      z-index:10;
-      text-align:center;
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 10, 30, .95);
+      backdrop-filter: blur(12px);
+      display: none;
+      align-items: center;
+      justify-content: center;
       padding: 20px;
-      color:#7a8db8;
-      font-size:13px;
+      z-index: 100;
+      animation: fadeIn .3s ease;
+    }
+
+    .overlay.active {
+      display: flex
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .modal {
+      max-width: 700px;
+      width: 100%;
+      background: linear-gradient(135deg, rgba(107, 76, 230, .5) 0%, rgba(74, 50, 168, .6) 100%);
+      border-radius: 24px;
+      padding: 36px;
+      backdrop-filter: blur(20px);
+      border: 3px solid rgba(79, 195, 247, .4);
+      box-shadow:
+        0 0 60px rgba(79, 195, 247, .3),
+        0 20px 80px rgba(0, 0, 0, .5),
+        inset 0 1px 0 rgba(255, 255, 255, .2);
+      transform: scale(.85) translateY(40px);
+      opacity: 0;
+      animation: modalPop .5s cubic-bezier(.68, -.55, .265, 1.55) forwards;
+    }
+
+    @keyframes modalPop {
+      to {
+        transform: scale(1) translateY(0);
+        opacity: 1
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 1px;
+      box-shadow:
+        0 4px 16px rgba(0, 0, 0, .3),
+        inset 0 1px 0 rgba(255, 255, 255, .3);
+    }
+
+    .badge-success {
+      background: linear-gradient(135deg, var(--green), #00e676);
+      color: #000;
+      padding: 8px 16px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .modal h2 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #b8c9ff;
+      /* text-transform: uppercase; */
+      letter-spacing: 1px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 12px 20px;
+      border-radius: 12px;
+      border-left: 4px solid var(--blue);
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, .2);
+      margin-bottom: 16px;
+    }
+
+    .modal p {
+      font-family: "Lilita One", cursive;
+      font-size: clamp(28px, 5vw, 40px);
+      color: #fff;
+      text-shadow: 0 2px 16px rgba(0, 0, 0, .5);
+      margin: 0;
+    }
+
+
+    .sparkle-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .sparkle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: radial-gradient(circle, #fff, transparent);
+      border-radius: 50%;
+      opacity: 0;
+      animation: sparkleAnim 1.5s ease-out forwards;
+    }
+
+    @keyframes sparkleAnim {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(0)
+      }
+
+      50% {
+        opacity: 1;
+        transform: translate(var(--x), var(--y)) scale(1)
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(var(--x), var(--y)) scale(0)
+      }
+    }
+
+    footer {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 20px;
+      color: #7a8db8;
+      font-size: 13px;
       padding-top: 0;
     }
-    footer span{
-      color:var(--blue);
-      text-decoration:none;
-      font-weight:600;
-    }
 
+    footer span {
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 600;
+    }
   </style>
 </head>
+
 <body>
   <div class="space-bg" id="spaceBg"></div>
   <div class="stars" id="stars"></div>
@@ -383,21 +489,21 @@
 
   <script>
     const challenges = [
-      "Design a test plan to validate login rate limits for 1M MAU.",
-      "Create an algorithm to schedule 1000 jobs with minimal latency.",
-      "Draft a risk register for a payments microservice migration.",
-      "Propose a cache strategy to cut P99 latencies by 40%.",
-      "Write acceptance criteria for a Jira epic: Invoice Export v2.",
-      "Estimate infra cost to scale feature flags to 10M users.",
-      "Model A/B test power for expected uplift of 3%.",
-      "Outline data contracts to prevent schema drift in ETL.",
-      "Design load tests for an API with bursty traffic.",
-      "Create a rollback plan for zero-downtime releases.",
-      "Prioritize a backlog using RICE with constraints.",
-      "Map observability (logs/metrics/traces) for auth service.",
-      "Propose error budgets and SLOs for core endpoints.",
-      "Draft a playbook for incident triage within 15 minutes.",
-      "Define QA gates for agentic test generation pipeline."
+      "KaneAI-Powered Smart Test and Synthetic Data Generator with HyperExecute Integration",
+      "Fragile API Contract Divergence Predictor",
+      "GenAI-Driven Performance Model Suggestor / Performance Score for PRs",
+      "AttackFlow-AI: Generative Security Test Case Generator",
+      "Dynamic Correlation in Performance Testing Flows",
+      "AttackFlow-AI: Generative Security Test Case Generator",
+      "KaneAI-Powered Smart Test and Synthetic Data Generator with HyperExecute Integration",
+      "Dynamic Correlation in Performance Testing Flows",
+      "GenAI-Driven Performance Model Suggestor / Performance Score for PRs",
+      "Fragile API Contract Divergence Predictor",
+      "KaneAI-Powered Smart Test and Synthetic Data Generator with HyperExecute Integration",
+      "Dynamic Correlation in Performance Testing Flows",
+      "AttackFlow-AI: Generative Security Test Case Generator",
+      "Fragile API Contract Divergence Predictor",
+      "GenAI-Driven Performance Model Suggestor / Performance Score for PRs"
     ];
 
     const icons = ['🌟', '🌟', '🌟', '🌟', '🌟', '🌟', '🌟', '🌟', '🌟', '🌟', '🌟', '🌟', '🌟', '🌟', '🌟'];
@@ -446,7 +552,7 @@
       const x = (e.clientX / window.innerWidth - 0.5) * 20;
       const y = (e.clientY / window.innerHeight - 0.5) * 20;
       spaceBg.style.transform = `translate(${x}px, ${y}px)`;
-      
+
       starsContainer.style.transform = `translate(${x * 0.5}px, ${y * 0.5}px)`;
       planetsContainer.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
     });
@@ -467,10 +573,10 @@
 
     function openCase(num, btn) {
       if (btn.classList.contains('opened')) return;
-      
+
       lastClicked = btn;
       caseNum.textContent = `CASE ${num}`;
-      modalTitle.textContent = `Challenge #${num}`;
+      modalTitle.textContent = `Problem Statement #${num}`;
       challengeText.textContent = challenges[num - 1];
 
       // Create sparkles
@@ -512,4 +618,5 @@
     }
   </script>
 </body>
+
 </html>
